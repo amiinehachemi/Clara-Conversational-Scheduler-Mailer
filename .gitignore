@@ -141,7 +141,6 @@ logs
 
 # Google OAuth and API credentials
 token.json
-credentials.json
 client_secret*.json
 service-account*.json
 

@@ -8,8 +8,7 @@ This document outlines how to properly handle sensitive information in this AI A
 
 The following files contain sensitive information and should **NEVER** be committed to version control:
 
-- `token.json` - Contains Google OAuth tokens
-- `credentials.json` - Contains Google API credentials
+- `token.json` - Contains Google OAuth tokens (legacy file, can be removed)
 - `.env` - Contains environment variables with API keys
 - `.env.local` - Local environment variables
 - Any file with API keys, passwords, or tokens
@@ -30,6 +29,7 @@ The following files contain sensitive information and should **NEVER** be commit
 3. **Required Environment Variables:**
    - `GOOGLE_CLIENT_ID` - Your Google OAuth client ID
    - `GOOGLE_CLIENT_SECRET` - Your Google OAuth client secret
+   - `GOOGLE_REFRESH_TOKEN` - Your Google OAuth refresh token
    - `OPENAI_API_KEY` - Your OpenAI API key
    - `GOOGLE_CALENDAR_CALENDAR_ID` - Your Google Calendar ID (usually 'primary')
 
@@ -52,11 +52,11 @@ The following files contain sensitive information and should **NEVER** be commit
      - `http://localhost:3000/api/auth/callback/google` (for development)
      - Your production domain (for production)
 
-4. **Download credentials:**
-   - Download the JSON file
-   - Rename it to `credentials.json`
-   - Place it in your project root
-   - **DO NOT COMMIT THIS FILE**
+4. **Get OAuth Credentials:**
+   - Copy the Client ID and Client Secret
+   - Add them to your `.env.local` file
+   - Complete the OAuth flow to get a refresh token
+   - Add the refresh token to your `.env.local` file
 
 ### 🤖 **OpenAI API Setup**
 
