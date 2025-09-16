@@ -3,9 +3,59 @@ import { ChatOpenAI } from '@langchain/openai';
 import { testTool, getCurrentDateTool, checkAvailabilityTool, createAppointmentTool, listAppointmentsTool, verifyAppointmentTool } from '../../../lib/tools/calendarTools.js';
 import { getCurrentDateInfo } from '../../../lib/dateUtils.js';
 
+// Simple in-memory rate limiting
+const rateLimitMap = new Map();
+const RATE_LIMIT = 50; // requests per 4 hours
+const WINDOW_MS = 4 * 60 * 60 * 1000; // 4 hours
+
+function getRateLimitKey(request) {
+  // Get IP from various headers (Vercel, Cloudflare, etc.)
+  const forwarded = request.headers.get('x-forwarded-for');
+  const realIp = request.headers.get('x-real-ip');
+  const cfConnectingIp = request.headers.get('cf-connecting-ip');
+  
+  return forwarded?.split(',')[0] || realIp || cfConnectingIp || 'unknown';
+}
+
+function checkRateLimit(ip) {
+  const now = Date.now();
+  const windowStart = now - WINDOW_MS;
+  
+  // Get or create rate limit data for this IP
+  let rateLimitData = rateLimitMap.get(ip) || { requests: [], lastCleanup: now };
+  
+  // Clean up old requests
+  rateLimitData.requests = rateLimitData.requests.filter(time => time > windowStart);
+  
+  // Check if over limit
+  if (rateLimitData.requests.length >= RATE_LIMIT) {
+    return false;
+  }
+  
+  // Add current request
+  rateLimitData.requests.push(now);
+  rateLimitData.lastCleanup = now;
+  rateLimitMap.set(ip, rateLimitData);
+  
+  return true;
+}
+
 export async function POST(request) {
   console.log('🚀 CHAT API ENDPOINT CALLED');
   console.log('⏰ Timestamp:', new Date().toISOString());
+  
+  // Rate limiting check
+  const clientIp = getRateLimitKey(request);
+  if (!checkRateLimit(clientIp)) {
+    console.log('🚫 RATE LIMIT EXCEEDED for IP:', clientIp);
+    return NextResponse.json(
+      { 
+        error: 'Due to high usage, please try again later.',
+        retryAfter: 14400 // 4 hours in seconds
+      }, 
+      { status: 429 }
+    );
+  }
   
   try {
     const { message, systemPrompt, chatHistory = [] } = await request.json();

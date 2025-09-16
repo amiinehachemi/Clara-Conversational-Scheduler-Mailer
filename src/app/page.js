@@ -592,7 +592,7 @@ export default function Home() {
         const errorMessage = {
           id: messages.length + 2,
           type: 'ai',
-          text: 'Sorry, I encountered an error. Please try again.'
+          text: 'Due to high usage, please try again later.'
         };
         setMessages(prev => [...prev, errorMessage]);
       } finally {
