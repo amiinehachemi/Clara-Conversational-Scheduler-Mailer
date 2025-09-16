@@ -7,26 +7,30 @@
    - Create a new project or select existing one
    - Enable the Google Calendar API
    - Create OAuth 2.0 credentials (Desktop application type)
-   - Download the `credentials.json` file
+   - Copy the Client ID and Client Secret
 
 ## Setup Steps
 
-### 1. Place Credentials File
-- Download `credentials.json` from Google Cloud Console
-- Place it in your project root directory: `/home/guru/ai-appointment-demo/credentials.json`
-
-### 2. Environment Variables
-The following environment variables are already configured in `.env.local`:
+### 1. Environment Variables
+Configure the following environment variables in your `.env.local` file:
 ```
-GOOGLE_CALENDAR_CREDENTIALS_PATH=./credentials.json
-GOOGLE_CALENDAR_TOKEN_PATH=./token.json
+# Google OAuth Configuration
+GOOGLE_CLIENT_ID=your_google_client_id_here
+GOOGLE_CLIENT_SECRET=your_google_client_secret_here
+GOOGLE_REFRESH_TOKEN=your_google_refresh_token_here
+
+# Google Calendar Configuration
 GOOGLE_CALENDAR_CALENDAR_ID=primary
+GOOGLE_REDIRECT_URI=http://localhost:3000/api/auth/callback/google
 ```
 
-### 3. First Run Authentication
-- On first run, the app will open a browser window for OAuth consent
-- Grant permissions to access your Google Calendar
-- A `token.json` file will be automatically created for future use
+### 2. Get Refresh Token
+Run the helper script to get your refresh token:
+```bash
+node scripts/get-refresh-token.js
+```
+
+This will guide you through the OAuth flow and provide a refresh token to add to your `.env.local` file.
 
 ## Available Tools
 

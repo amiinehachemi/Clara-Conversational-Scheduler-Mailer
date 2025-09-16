@@ -22,8 +22,7 @@ export async function POST(request) {
 
     // Initialize OpenAI model with GPT-4 and function calling
     const model = new ChatOpenAI({ 
-      model: "gpt-4",
-      temperature: 0.7,
+      model: "gpt-5-nano",
     });
 
     console.log('🤖 Initializing AI Agent with function calling...');
